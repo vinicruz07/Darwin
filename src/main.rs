@@ -1,37 +1,47 @@
 #![forbid(unsafe_code)]
 
+mod canvas;
 mod ga;
 mod mlp;
 mod sim;
 mod track;
 mod ui;
 
-use macroquad::prelude::*;
+use canvas::Canvas;
+use minifb::{Key, KeyRepeat, Window, WindowOptions};
 use sim::{Car, Simulation};
 use track::Track;
 
-fn window_conf() -> Conf {
-    Conf {
-        window_title: "Darwin Racing — Neuroevolução (MLP + GA em Safe Rust)".to_string(),
-        window_width: 1280,
-        window_height: 720,
-        window_resizable: false,
-        ..Default::default()
-    }
-}
+const WINDOW_WIDTH: usize = 1280;
+const WINDOW_HEIGHT: usize = 720;
 
-#[macroquad::main(window_conf)]
-async fn main() {
+fn main() {
     let initial_track = Track::circuit_1();
     let mut sim = Simulation::new(initial_track);
+    let mut canvas = Canvas::new(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    let mut window = Window::new(
+        "Darwin Racing - Neuroevolucao (MLP + GA em Safe Rust)",
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
+        WindowOptions {
+            resize: false,
+            scale: minifb::Scale::X1,
+            ..WindowOptions::default()
+        },
+    )
+    .expect("Falha ao inicializar janela Win32 GDI");
+
+    // Limita a 60 FPS
+    window.set_target_fps(60);
 
     let dt = 1.0 / 60.0;
 
-    loop {
+    while window.is_open() && !window.is_key_down(Key::Escape) {
         // --- 1. Processamento de Teclas e Controles ---
 
         // Alternar multiplicador de velocidade (1x -> 5x -> 50x Turbo)
-        if is_key_pressed(KeyCode::Space) {
+        if window.is_key_pressed(Key::Space, KeyRepeat::No) {
             sim.turbo_multiplier = match sim.turbo_multiplier {
                 1 => 5,
                 5 => 50,
@@ -40,26 +50,26 @@ async fn main() {
         }
 
         // Pular 10 gerações instantaneamente
-        if is_key_pressed(KeyCode::G) {
+        if window.is_key_pressed(Key::G, KeyRepeat::No) {
             sim.skip_generations(10);
         }
 
         // Alternar circuitos (1, 2 ou 3)
-        if is_key_pressed(KeyCode::Key1) {
+        if window.is_key_pressed(Key::Key1, KeyRepeat::No) {
             sim.set_track(Track::circuit_1());
-        } else if is_key_pressed(KeyCode::Key2) {
+        } else if window.is_key_pressed(Key::Key2, KeyRepeat::No) {
             sim.set_track(Track::circuit_2());
-        } else if is_key_pressed(KeyCode::Key3) {
+        } else if window.is_key_pressed(Key::Key3, KeyRepeat::No) {
             sim.set_track(Track::circuit_3());
         }
 
         // Alternar feixes de sensores visíveis
-        if is_key_pressed(KeyCode::R) {
+        if window.is_key_pressed(Key::R, KeyRepeat::No) {
             sim.show_sensors = !sim.show_sensors;
         }
 
         // Ativar/Desativar modo Humano vs IA
-        if is_key_pressed(KeyCode::H) {
+        if window.is_key_pressed(Key::H, KeyRepeat::No) {
             if sim.human_car.is_some() {
                 sim.human_car = None;
                 sim.champion_replay_car = None;
@@ -72,7 +82,7 @@ async fn main() {
         }
 
         // Salvar melhor genoma em arquivo JSON
-        if is_key_pressed(KeyCode::S) {
+        if window.is_key_pressed(Key::S, KeyRepeat::No) {
             if let Some(ref best_gen) = sim.best_historical_genome {
                 if let Ok(json_str) = serde_json::to_string_pretty(best_gen) {
                     let _ = std::fs::write("best_genome.json", json_str);
@@ -82,7 +92,7 @@ async fn main() {
         }
 
         // Carregar genoma salvo de 'best_genome.json'
-        if is_key_pressed(KeyCode::L) {
+        if window.is_key_pressed(Key::L, KeyRepeat::No) {
             if let Ok(json_str) = std::fs::read_to_string("best_genome.json") {
                 if let Ok(loaded_gen) = serde_json::from_str::<ga::Genome>(&json_str) {
                     sim.best_historical_genome = Some(loaded_gen.clone());
@@ -98,18 +108,18 @@ async fn main() {
         if let Some(ref mut human) = sim.human_car {
             if human.alive {
                 let mut steer = 0.0;
-                if is_key_down(KeyCode::Left) || is_key_down(KeyCode::A) {
+                if window.is_key_down(Key::Left) || window.is_key_down(Key::A) {
                     steer -= 1.0;
                 }
-                if is_key_down(KeyCode::Right) || is_key_down(KeyCode::D) {
+                if window.is_key_down(Key::Right) || window.is_key_down(Key::D) {
                     steer += 1.0;
                 }
 
                 let mut throttle = 0.0;
-                if is_key_down(KeyCode::Up) || is_key_down(KeyCode::W) {
+                if window.is_key_down(Key::Up) || window.is_key_down(Key::W) {
                     throttle += 1.0;
                 }
-                if is_key_down(KeyCode::Down) || is_key_down(KeyCode::S) {
+                if window.is_key_down(Key::Down) || window.is_key_down(Key::S) {
                     throttle -= 1.0;
                 }
 
@@ -120,9 +130,13 @@ async fn main() {
         // --- 2. Atualizar Simulação Físico-Genética ---
         sim.update(dt);
 
-        // --- 3. Renderizar Gráficos na Tela ---
-        ui::render_frame(&sim);
+        // --- 3. Renderizar Gráficos no Framebuffer em Software ---
+        ui::render_frame(&mut canvas, &sim);
 
-        next_frame().await;
+        // --- 4. Enviar Framebuffer diretamente para a Janela Win32 GDI ---
+        if let Err(e) = window.update_with_buffer(&canvas.buffer, WINDOW_WIDTH, WINDOW_HEIGHT) {
+            eprintln!("Erro ao atualizar janela: {:?}", e);
+            break;
+        }
     }
 }
