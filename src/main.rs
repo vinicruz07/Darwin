@@ -54,13 +54,19 @@ fn main() {
             sim.skip_generations(10);
         }
 
-        // Alternar circuitos (1, 2 ou 3)
+        // Alternar circuitos (Teclas 1 a 5 para os Ovais, ou I para Interlagos)
         if window.is_key_pressed(Key::Key1, KeyRepeat::No) {
-            sim.set_track(Track::circuit_1());
+            sim.set_track(Track::oval_1());
         } else if window.is_key_pressed(Key::Key2, KeyRepeat::No) {
-            sim.set_track(Track::circuit_2());
+            sim.set_track(Track::oval_2());
         } else if window.is_key_pressed(Key::Key3, KeyRepeat::No) {
-            sim.set_track(Track::circuit_3());
+            sim.set_track(Track::oval_3());
+        } else if window.is_key_pressed(Key::Key4, KeyRepeat::No) {
+            sim.set_track(Track::oval_4());
+        } else if window.is_key_pressed(Key::Key5, KeyRepeat::No) {
+            sim.set_track(Track::oval_5());
+        } else if window.is_key_pressed(Key::I, KeyRepeat::No) {
+            sim.set_track(Track::circuit_1());
         }
 
         // Alternar feixes de sensores visíveis

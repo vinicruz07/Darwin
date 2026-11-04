@@ -179,7 +179,18 @@ fn render_sidebar(canvas: &mut Canvas, sim: &Simulation, leader_idx: usize) {
         1,
         Color::rgb(255, 215, 50),
     );
-    y += 24.0;
+    y += 16.0;
+
+    // Exibir média atual da última geração
+    let last_avg = sim.ga.history.last().map(|s| s.avg_fitness).unwrap_or(0.0);
+    canvas.draw_text(
+        &format!("Fitness Medio Atual: {:.0}", last_avg),
+        margin,
+        y,
+        1,
+        Color::rgb(200, 200, 100),
+    );
+    y += 20.0;
 
     // Bloco 2: Visualizador da MLP em Tempo Real (Carro Líder)
     canvas.draw_text("Cerebro do Lider (MLP)", margin, y, 1, Color::rgb(100, 200, 255));
@@ -222,9 +233,11 @@ fn render_sidebar(canvas: &mut Canvas, sim: &Simulation, leader_idx: usize) {
         "[Espaco]: Alternar Velocidade (1x/5x/50x)",
         "[G]: Pular 10 Geracoes Instantaneamente",
         "[N / Backspace]: Resetar IA (Geracao 1)",
-        "[1, 2, 3]: Pistas F1 (Brasil, Italia, Spa)",
-        "[H]: Modo Humano vs IA (WASD ou Setas)",
-        "[R]: Alternar Raios Laser",
+        "[1]: Monza  |  [2]: Red Bull Ring",
+        "[3]: Laguna Seca (Corkscrew)",
+        "[4]: Suzuka (8)  |  [5]: Nurburgring",
+        "[I]: Interlagos (Brasil)",
+        "[H]: Humano vs IA  |  [R]: Lasers",
         "[S]: Salvar Genoma  |  [L]: Carregar",
     ];
 

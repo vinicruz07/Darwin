@@ -35,11 +35,11 @@ impl Default for GaConfig {
     fn default() -> Self {
         Self {
             population_size: 200,
-            elitism_count: 10,
-            tournament_size: 5,
+            elitism_count: 25,         // 12.5% melhores preservados intactos (base solida de campeões)
+            tournament_size: 8,        // Pressão seletiva maior: os pais escolhidos quase sempre são do topo
             crossover_rate: 0.85,
-            mutation_rate: 0.15,
-            mutation_strength: 0.30,
+            mutation_rate: 0.06,       // Mutação suave: ~14 genes alterados por filho (em vez de 35)
+            mutation_strength: 0.12,   // Desvio padrão pequeno: micro-ajustes para não destruir o aprendizado
         }
     }
 }
