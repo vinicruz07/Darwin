@@ -14,16 +14,17 @@ pub struct Layer {
 
 impl Layer {
     pub fn new_random(in_size: usize, out_size: usize, rng: &mut impl Rng) -> Self {
-        // Inicialização He/Xavier adaptada para tanh
-        let limit = (6.0 / (in_size + out_size) as f32).sqrt();
+        // Inicialização uniforme ampla [-1.5, 1.5] para pesos e [-1.0, 1.0] para biases.
+        // Isso garante que na Geração 1 os indivíduos sejam realmente caóticos/aleatórios
+        // (sem viés artificial de andar reto/suave no centro da tanh).
         let total_weights = in_size * out_size;
         let mut weights = Vec::with_capacity(total_weights);
         for _ in 0..total_weights {
-            weights.push(rng.gen_range(-limit..limit));
+            weights.push(rng.gen_range(-1.5..1.5));
         }
         let mut biases = Vec::with_capacity(out_size);
         for _ in 0..out_size {
-            biases.push(rng.gen_range(-0.1..0.1));
+            biases.push(rng.gen_range(-1.0..1.0));
         }
 
         Self {

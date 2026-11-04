@@ -221,7 +221,8 @@ fn render_sidebar(canvas: &mut Canvas, sim: &Simulation, leader_idx: usize) {
     let controls = [
         "[Espaco]: Alternar Velocidade (1x/5x/50x)",
         "[G]: Pular 10 Geracoes Instantaneamente",
-        "[1, 2, 3]: Trocar Pista (Darwin, S, GP)",
+        "[N / Backspace]: Resetar IA (Geracao 1)",
+        "[1, 2, 3]: Pistas F1 (Brasil, Italia, Spa)",
         "[H]: Modo Humano vs IA (WASD ou Setas)",
         "[R]: Alternar Raios Laser",
         "[S]: Salvar Genoma  |  [L]: Carregar",

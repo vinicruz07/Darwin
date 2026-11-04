@@ -126,75 +126,106 @@ impl Track {
         closest_t
     }
 
-    /// Circuito 1: Darwin Park (Traçado oval misto com chicanes suaves)
     pub fn circuit_1() -> Self {
         Self::generate_from_centerline(
-            "Circuito 1 — Darwin Park",
+            "1: F1 Interlagos (Brasil)",
             &[
-                Vec2::new(200.0, 160.0),
-                Vec2::new(450.0, 140.0),
-                Vec2::new(700.0, 160.0),
-                Vec2::new(840.0, 260.0),
-                Vec2::new(850.0, 480.0),
-                Vec2::new(700.0, 600.0),
-                Vec2::new(550.0, 520.0),
-                Vec2::new(400.0, 580.0),
-                Vec2::new(220.0, 560.0),
-                Vec2::new(120.0, 440.0),
-                Vec2::new(110.0, 260.0),
+                // --- Setor 1: Reta Principal, S do Senna e Curva do Sol ---
+                Vec2::new(280.0, 380.0), // Reta Principal (Largada / Chegada)
+                Vec2::new(330.0, 545.0), // Fim da Reta Principal (Freada T1)
+                Vec2::new(350.0, 555.0), // S do Senna (T1 - Perna Esquerda)
+                Vec2::new(390.0, 530.0), // S do Senna (T2 - Perna Direita)
+                Vec2::new(455.0, 550.0), // Curva do Sol (T3 - Contorno longo à esquerda)
+                Vec2::new(515.0, 510.0), // Saída da Curva do Sol
+
+                // --- Setor 2: Reta Oposta, Descida do Lago e Miolo ---
+                Vec2::new(565.0, 350.0), // Reta Oposta (Meio)
+                Vec2::new(610.0, 195.0), // Fim da Reta Oposta (Freada Descida do Lago)
+                Vec2::new(600.0, 175.0), // Descida do Lago (T4 - Esquerda rápida)
+                Vec2::new(535.0, 165.0), // Reta curta após o Lago (T5)
+                Vec2::new(495.0, 180.0), // Início da descida para a Ferradura
+                Vec2::new(380.0, 325.0), // Ferradura (T6 - Entrada à esquerda)
+                Vec2::new(335.0, 330.0), // Ferradura (Meio da curva)
+                Vec2::new(300.0, 300.0), // Ferradura (T7 - Saída subindo)
+                Vec2::new(285.0, 240.0), // Laranjinha (T8 - Entrada)
+                Vec2::new(305.0, 225.0), // Laranjinha (Contorno à direita)
+                Vec2::new(340.0, 245.0), // Entrada do Pinheirinho
+                Vec2::new(365.0, 225.0), // Pinheirinho (T9 - Grampo à esquerda)
+                Vec2::new(360.0, 200.0), // Saída do Pinheirinho
+                Vec2::new(320.0, 165.0), // Reta curta rumo ao Bico de Pato
+                Vec2::new(310.0, 120.0), // Bico de Pato (T10 - Freada)
+                Vec2::new(325.0, 105.0), // Bico de Pato (Cotovelo fechado à direita)
+                Vec2::new(375.0, 160.0), // Descida após o Bico de Pato
+                Vec2::new(410.0, 170.0), // Mergulho (T11 - Curva à esquerda)
+                Vec2::new(450.0, 145.0), // Freada para a Junção
+
+                // --- Setor 3: Junção e Subida dos Boxes ---
+                Vec2::new(500.0, 65.0),  // Junção (T12 - Entrada)
+                Vec2::new(490.0, 50.0),  // Junção (Contorno à esquerda)
+                Vec2::new(425.0, 35.0),  // Início da Subida dos Boxes (T13)
+                Vec2::new(350.0, 55.0),  // Subida dos Boxes
+                Vec2::new(300.0, 90.0),  // Curva do Café (T14)
+                Vec2::new(255.0, 260.0), // Arquibancadas (T15 - Entrada da Reta)
             ],
-            70.0,
+            32.0, // Se a pista ficar larga demais nesta escala, reduza para ~32.0
         )
     }
 
-    /// Circuito 2: Serpentina Técnica (Curvas fechadas em S)
+    /// Circuito 2: F1 Monza (GP Italia — Rettifilo, Curva Grande, Lesmo 1/2, Ascari, Parabolica)
     pub fn circuit_2() -> Self {
         Self::generate_from_centerline(
-            "Circuito 2 — Serpentina Técnica",
+            "2: F1 Monza (Italia)",
             &[
-                Vec2::new(180.0, 150.0),
-                Vec2::new(450.0, 130.0),
-                Vec2::new(750.0, 150.0),
-                Vec2::new(850.0, 300.0),
-                Vec2::new(650.0, 340.0),
-                Vec2::new(400.0, 380.0),
-                Vec2::new(200.0, 420.0),
-                Vec2::new(350.0, 560.0),
-                Vec2::new(650.0, 600.0),
-                Vec2::new(820.0, 580.0),
-                Vec2::new(850.0, 660.0),
-                Vec2::new(450.0, 690.0),
-                Vec2::new(150.0, 620.0),
-                Vec2::new(120.0, 350.0),
+                Vec2::new(220.0, 590.0), // Reta Principal (Largada)
+                Vec2::new(520.0, 600.0), // Metade da Reta
+                Vec2::new(780.0, 590.0), // Variante del Rettifilo (Entrada)
+                Vec2::new(830.0, 520.0), // Chicane Rettifilo (Saída)
+                Vec2::new(820.0, 340.0), // Curva Grande
+                Vec2::new(760.0, 170.0), // Curva di Lesmo 1
+                Vec2::new(600.0, 140.0), // Curva di Lesmo 2
+                Vec2::new(470.0, 250.0), // Descida do Serraglio
+                Vec2::new(340.0, 290.0), // Variante Ascari (Entrada esquerda)
+                Vec2::new(250.0, 230.0), // Variante Ascari (Saída direita)
+                Vec2::new(130.0, 290.0), // Reta Oposta rumo à Parabolica
+                Vec2::new(110.0, 470.0), // Curva Parabolica (Alboreto)
             ],
-            65.0,
+            50.0,
         )
     }
 
-    /// Circuito 3: Grand Prix Retrô (Traçado longo com grampo fechado)
+    /// Circuito 3: F1 Spa-Francorchamps (Eau Rouge, Raidillon, Kemmel, Pouhon, Bus Stop)
     pub fn circuit_3() -> Self {
         Self::generate_from_centerline(
-            "Circuito 3 — Grand Prix Retrô",
+            "3: F1 Spa (Belgica)",
             &[
-                Vec2::new(180.0, 180.0),
-                Vec2::new(500.0, 150.0),
-                Vec2::new(800.0, 180.0),
-                Vec2::new(880.0, 350.0),
-                Vec2::new(720.0, 420.0),
-                Vec2::new(520.0, 320.0),
-                Vec2::new(350.0, 340.0),
-                Vec2::new(500.0, 480.0),
-                Vec2::new(780.0, 550.0),
-                Vec2::new(850.0, 660.0),
-                Vec2::new(550.0, 680.0),
-                Vec2::new(200.0, 650.0),
-                Vec2::new(120.0, 420.0),
+                Vec2::new(180.0, 300.0), // Largada rumo a La Source
+                Vec2::new(130.0, 170.0), // Hairpin La Source
+                Vec2::new(290.0, 150.0), // Descida para Eau Rouge
+                Vec2::new(380.0, 210.0), // Eau Rouge / Raidillon (S em subida)
+                Vec2::new(520.0, 130.0), // Reta Kemmel
+                Vec2::new(780.0, 140.0), // Les Combes (Chicane)
+                Vec2::new(840.0, 260.0), // Bruxelles / Rivage
+                Vec2::new(660.0, 340.0), // Entrada de Pouhon
+                Vec2::new(520.0, 450.0), // Pouhon (Curva dupla rápida)
+                Vec2::new(680.0, 560.0), // Campus / Stavelot
+                Vec2::new(820.0, 620.0), // Paul Frere
+                Vec2::new(520.0, 640.0), // Blanchimont (Alta velocidade)
+                Vec2::new(250.0, 560.0), // Chicane Bus Stop
             ],
-            60.0,
+            48.0,
         )
     }
 
-    fn generate_from_centerline(name: &str, points: &[Vec2], track_width: f32) -> Self {
+    /// Constrói qualquer circuito fechado a partir de uma lista de coordenadas `(x, y)` da linha central (Centerline)
+    /// e da largura da pista em pixels (`track_width`).
+    ///
+    /// ### Formato para criar novos circuitos de F1:
+    /// - A área livre de desenho da pista na janela vai de `X: 80.0 .. 860.0` e `Y: 80.0 .. 660.0`
+    ///   (já que os últimos 360px à direita são ocupados pelo painel analítico).
+    /// - O vetor `points` define os pontos sequenciais do traçado na ordem em que os carros vão correr.
+    /// - `points[0]` é a Linha de Largada, e os carros nascem apontados de `points[0]` para `points[1]`.
+    /// - O circuito fecha automaticamente ligando o último ponto de volta ao `points[0]`.
+    pub fn generate_from_centerline(name: &str, points: &[Vec2], track_width: f32) -> Self {
         let n = points.len();
         let half_w = track_width / 2.0;
 

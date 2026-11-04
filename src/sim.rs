@@ -16,10 +16,10 @@ pub const RAY_ANGLES: [f32; 7] = [
     std::f32::consts::FRAC_PI_2,         // +90 deg
 ];
 
-pub const MAX_RAY_DIST: f32 = 220.0;
+pub const MAX_RAY_DIST: f32 = 200.0;
 pub const CAR_LENGTH: f32 = 18.0;
 pub const CAR_WIDTH: f32 = 9.0;
-pub const TIMEOUT_TICKS: u32 = 240; // 4 segundos a 60 FPS sem cruzar checkpoint = timeout
+pub const TIMEOUT_TICKS: u32 = 160; // ~2.6 segundos a 60 FPS sem cruzar checkpoint = desclassificado
 
 #[derive(Clone, Debug)]
 pub struct Car {
@@ -107,18 +107,20 @@ impl Car {
             return;
         }
 
-        // Steer: [-1, 1], rotação máxima 3.2 rad/s
-        let max_steer_speed = 3.2;
-        self.angle += steer.clamp(-1.0, 1.0) * max_steer_speed * dt;
-
-        // Throttle: [-1, 1], aceleração e frenagem com atrito aerodinâmico
+        // Throttle: [-1, 1], aceleração e frenagem com atrito real.
+        // Sem movimento "grátis": se a rede frear (throttle <= 0), o carro para de verdade!
         let accel = if throttle >= 0.0 {
-            throttle * 120.0
+            throttle * 140.0
         } else {
-            throttle * 180.0
+            throttle * 200.0
         };
-        let friction = 0.5 * self.speed;
-        self.speed = (self.speed + (accel - friction) * dt).clamp(0.2, 5.5);
+        let friction = 18.0 + 0.8 * self.speed;
+        self.speed = (self.speed + (accel - friction) * dt).clamp(0.0, 5.5);
+
+        // Esterçamento proporcional à velocidade: um carro parado não gira no próprio eixo
+        let speed_factor = (self.speed / 2.2).clamp(0.0, 1.0);
+        let max_steer_speed = 3.0;
+        self.angle += steer.clamp(-1.0, 1.0) * max_steer_speed * speed_factor * dt;
 
         self.prev_pos = self.pos;
         self.pos.x += self.speed * self.angle.cos();
@@ -142,8 +144,10 @@ impl Car {
             return;
         }
 
-        // 1. Timeout por estagnação
-        if self.ticks_since_checkpoint > TIMEOUT_TICKS {
+        // 1. Timeout por estagnação ou carro parado na pista
+        if self.ticks_since_checkpoint > TIMEOUT_TICKS
+            || (self.ticks_since_checkpoint > 45 && self.speed < 0.25)
+        {
             self.alive = false;
             return;
         }
@@ -235,6 +239,21 @@ impl Simulation {
 
     pub fn set_track(&mut self, track: Track) {
         self.track = track;
+        self.restart_generation();
+    }
+
+    /// Reseta completamente a evolução de volta para a Geração 1 com pesos 100% novos e aleatórios
+    pub fn reset_population(&mut self) {
+        let topology = self.topology.clone();
+        let ga_config = self.ga.config.clone();
+
+        self.ga = GeneticAlgorithm::new(ga_config, || {
+            let mut r = thread_rng();
+            Mlp::new_random(&topology, &mut r).to_genes()
+        });
+        self.best_historical_genome = None;
+        self.best_historical_fitness = 0.0;
+        self.champion_replay_car = None;
         self.restart_generation();
     }
 

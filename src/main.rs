@@ -68,6 +68,14 @@ fn main() {
             sim.show_sensors = !sim.show_sensors;
         }
 
+        // Resetar população inteira de volta para a Geração 1 (Pesos 100% aleatórios do zero)
+        if window.is_key_pressed(Key::N, KeyRepeat::No)
+            || window.is_key_pressed(Key::Backspace, KeyRepeat::No)
+        {
+            sim.reset_population();
+            println!("Populacao resetada para a Geracao 1!");
+        }
+
         // Ativar/Desativar modo Humano vs IA
         if window.is_key_pressed(Key::H, KeyRepeat::No) {
             if sim.human_car.is_some() {
